@@ -1,31 +1,36 @@
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.*;
+package server;
 
-public class Servidor {
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.*;
+import server.jogo.Engine;
+
+public class Server {
 
     private int port;
     private ServerSocket server;
-    private Socket client;
 
     private List<ConexaoJogador> conexoesAtivas;
 
-    public Servidor(){
+    private Engine engine;
+
+    public Server(){
         this.port = 9020;
-        conexoesAtivas = new ArrayList<>();
+        conexoesAtivas = new CopyOnWriteArrayList<>(); //implementacao preparada para concorrencia
+        // this.engine = new Engine(    );
     }
 
     public void iniciarConexao(){
         try{
-            server = new ServerSocket(port);
+            server = new ServerSocket(port); //inicia o socket de Server com a porta informada
 
             System.out.println("Aguardando conexao...");
 
             while(true){
-                client = server.accept();
+                Socket client = server.accept(); //estabelece conexao com o cliente
 
-                ConexaoJogador conexao = new ConexaoJogador(client); //instancia a conexao com um jogador
+                ConexaoJogador conexao = new ConexaoJogador(client, conexoesAtivas); //instancia a conexao com um jogador
                 Thread threadConexao = new Thread(conexao); // cria uma thread para gerenciar essa conexao
                 threadConexao.start(); // inicia a thread
 
@@ -39,7 +44,7 @@ public class Servidor {
     }
 
     public static void main(String[] args) {
-        Servidor servidor = new Servidor();
-        servidor.iniciarConexao();
+        Server Server = new Server();
+        Server.iniciarConexao();
     }
 }

@@ -8,9 +8,9 @@ public class EscritorCliente implements Runnable {
     private PrintWriter saida;
     private Scanner scanner;
 
-    EscritorCliente(PrintWriter saida){
+    EscritorCliente(PrintWriter saida, Scanner scanner){
         this.saida = saida;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     @Override

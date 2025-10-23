@@ -1,22 +1,16 @@
-package Jogo.Modelo.Logica;
+package server.jogo;
+
 
 import java.util.Map;
+import server.jogo.modelo.*;
 
-import Jogo.Modelo.Jogador;
-import Jogo.Modelo.Sala;
-import Jogo.Modelo.EstadoGlobal;
-import Jogo.Modelo.SistemaNotificacao;
-
-public class MotorDoJogo {
+public class Engine {
     private Jogador jogador;
     private Jogador jogador2;
     public Sala SalaJogador1;
     public Sala SalaJogador2;
 
-    public MotorDoJogo() {
-    }
-
-    public MotorDoJogo(Jogador jogador) {
+    public Engine(Jogador jogador) {
         this.jogador = jogador;
     }
 
@@ -239,8 +233,8 @@ public class MotorDoJogo {
         // --- LÓGICA DA FAZENDA (Capítulo 2) ---
         if (localAtual.getNome().equals("Fazenda")) {
             // Importar o tipo Fazenda para ter acesso aos métodos específicos
-            if (localAtual instanceof Jogo.Modelo.Fazenda) {
-                Jogo.Modelo.Fazenda fazenda = (Jogo.Modelo.Fazenda) localAtual;
+            if (localAtual instanceof Fazenda) {
+                Fazenda fazenda = (Fazenda) localAtual;
 
                 // Usar foice para pegar ingredientes
                 if (acao.equals("usar") && palavras.length >= 3 && palavras[1].equals("foice")) {
@@ -279,8 +273,8 @@ public class MotorDoJogo {
         // --- LÓGICA DO MOINHO (Capítulo 2) ---
         if (localAtual.getNome().equals("Moinho")) {
             // Importar o tipo Moinho para ter acesso aos métodos específicos
-            if (localAtual instanceof Jogo.Modelo.Moinho) {
-                Jogo.Modelo.Moinho moinho = (Jogo.Modelo.Moinho) localAtual;
+            if (localAtual instanceof Moinho) {
+                Moinho moinho = (Moinho) localAtual;
 
                 // Pegar foice
                 if ((acao.equals("pegar") || acao.equals("pegar")) && comando.contains("foice")) {

@@ -1,4 +1,4 @@
-package Jogo.Modelo;
+package server.jogo.modelo;
 
 import java.util.Arrays;
 import java.util.List;

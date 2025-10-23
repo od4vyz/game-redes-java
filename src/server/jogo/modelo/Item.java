@@ -1,4 +1,4 @@
-package Jogo.Modelo;
+package server.jogo.modelo;
 
 public class Item {
     String nome;

@@ -37,7 +37,7 @@ public class Cliente {
 
             // inicializa as instancias responsaveis pela comunicacao do lado cliente
             LeitorCliente leitor = new LeitorCliente(entrada);
-            EscritorCliente escritor = new EscritorCliente(saida);
+            EscritorCliente escritor = new EscritorCliente(saida, scanner);
 
             // cria as threads para gerenciar essas instancias
             Thread threadLeitura = new Thread(leitor);
