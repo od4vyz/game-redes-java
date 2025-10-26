@@ -17,7 +17,9 @@ public class ParserCliente {
         "O", "A", "OS", "AS", "UM", "UMA", "UNS", "UMAS", "ANTE", "APÓS", "APOS", "ATÉ", "ATE", "COM", "CONTRA", 
         "DE", "DESDE", "EM", "ENTRE", "PRO", "PRA", "PROS", "PRAS", "PRUM", "PRUNS",  "PARA", "PER", "PERANTE", "POR", "SEM", "SOB", "SOBRE", "TRÁS", "TRAS",
         "AO", "AOS", "À", "ÀS", "DO", "DA", "DOS", "DAS", "NO", "NA", "NOS", "NAS", "PELO",
-        "PELA", "PELOS", "PELAS", "NUM", "NUMA", "NUNS", "NUMAS", "DUM", "DUMA", "DUMS", "DUMAS", "DUNS"
+        "PELA", "PELOS", "PELAS", "NUM", "NUMA", "NUNS", "NUMAS", "DUM", "DUMA", "DUMS", "DUMAS", "DUNS", "ONDE", "QUE", "QUAL", "QUAIS", "QUEM", "CUJO", "CUJA", "CUJOS", "CUJAS",
+        "ME", "TE", "SE", "NOS", "VOS", "LHE", "LHES", "MIM", "TI", "SI", "QUAL", "QUAIS", "COMIGO", "CONTIGO", "CONSIGO", "EU", "TU", "ELE", "ELA", "NÓS", "VÓS", "ELES", "ELAS", "MEU",
+        "MINHA", "MEUS", "MINHAS", "TEU", "TUA", "TEUS", "TUAS", "SEU", "SUA", "SEUS", "SUAS", "NOSSO", "NOSSA", "NOSSOS", "NOSSAS", "VOSSO", "VOSSA", "VOSSOS", "VOSSAS"
     )));
 
     //Conjunto de ações
@@ -31,6 +33,9 @@ public class ParserCliente {
         Map<String, String> m = new HashMap<>();
         // todas as chaves em minúsculas; valores em MAIÚSCULAS (ou como preferir)
         m.put("VER", "OLHAR");
+        m.put("OLHO", "OLHAR");
+        m.put("OLHOS", "OLHAR");
+        m.put("OLHA", "OLHAR");
         m.put("OLHAR", "OLHAR");
         m.put("ENXERGAR", "OLHAR");
         m.put("OBSERVAR", "OLHAR");
@@ -45,43 +50,114 @@ public class ParserCliente {
 
 
         m.put("ANDAR", "IR");
+        m.put("ANDO", "IR");
+        m.put("ANDA", "IR");
         m.put("CAMINHAR", "IR");
+        m.put("CAMINHO", "IR");
+        m.put("CAMINHA", "IR");
         m.put("IR", "IR");
-        m.put("MOVER", "IR");
+        m.put("VOU", "IR");
         m.put("VAI", "IR");
-        m.put("PELA", "IR");
+        m.put("MOVER", "IR");
+        m.put("MOVO", "IR");
+        m.put("MOVO-ME", "IR");
+        m.put("MOVE", "IR");
+        m.put("MOVE-SE", "IR");
+        m.put("VOU", "IR");
         m.put("SUBIR", "IR");
+        m.put("SUBO", "IR");
+        m.put("ESCALO", "IR");
+        m.put("ESCALAR", "IR");
         m.put("DESCER", "IR");
+        m.put("DESÇO", "IR");
+        m.put("DESCO", "IR");
+        m.put("DECE", "IR");
         m.put("ENTRAR", "IR");
+        m.put("ENTRO", "IR");
+        m.put("ENTRA", "IR");
         m.put("VOLTAR", "IR");
+        m.put("VOLTO", "IR");
+        m.put("VOLTA", "IR");
         m.put("SAIR", "IR");
+        m.put("SAIO", "IR");
+        m.put("SAI", "IR");
 
 
         m.put("PEGAR", "PEGAR");
+        m.put("PEGO", "PEGAR");
+        m.put("PEGA", "PEGAR");
         m.put("APANHAR", "PEGAR");
+        m.put("APANHO", "PEGAR");
+        m.put("APANHA", "PEGAR");
         m.put("COLETAR", "PEGAR");
+        m.put("COLETO", "PEGAR");
+        m.put("COLETA", "PEGAR");
         m.put("TOMAR", "PEGAR");
+        m.put("TOMO", "PEGAR");
+        m.put("TOMA", "PEGAR");
         m.put("AGARRAR", "PEGAR");
+        m.put("AGARRO", "PEGAR");
+        m.put("AGARRA", "PEGAR");
         m.put("SEGURAR", "PEGAR");
+        m.put("SEGURO", "PEGAR");
+        m.put("SEGURA", "PEGAR");
         m.put("RECOLHER", "PEGAR");
+        m.put("RECOLHO", "PEGAR");
+        m.put("RECOLHE", "PEGAR");
         m.put("CAPTURAR", "PEGAR");
+        m.put("CAPTURO", "PEGAR");
+        m.put("CAPTURA", "PEGAR");
         m.put("PEGUE", "PEGAR");
+        m.put("PEGO", "PEGAR");
+        m.put("PEGA", "PEGAR");
         m.put("TOCAR", "PEGAR");
+        m.put("TOCO", "PEGAR");
+        m.put("TOCA", "PEGAR");
 
         m.put("USAR", "USAR");
+        m.put("USO", "USAR");
+        m.put("USO", "USAR");
         m.put("UTILIZAR", "USAR");
+        m.put("UTILIZO", "USAR");
+        m.put("UTILIZA", "USAR");
         m.put("EMPREGAR", "USAR");
+        m.put("EMPREGO", "USAR");
+        m.put("EMPREGA", "USAR");
+        m.put("POE", "USAR");
+        m.put("PÕE", "USAR");
+        m.put("PONHO", "USAR");
+        m.put("JOGAR", "USAR");
+        m.put("JOGO", "USAR");
+        m.put("JOGA", "USAR");
         m.put("APLICAR", "USAR");
+        m.put("APLICO", "USAR");
+        m.put("APLICA", "USAR");
         m.put("LIGAR", "USAR");
+        m.put("LIGO", "USAR");
+        m.put("LIGA", "USAR");
         m.put("APERTAR", "USAR");
+        m.put("APERTO", "USAR");
+        m.put("APERTA", "USAR");
         m.put("ACIONAR", "USAR");
+        m.put("ACIONO", "USAR");
+        m.put("ACIONA", "USAR");
         m.put("ABRIR", "USAR");
+        m.put("ABRO", "USAR");
+        m.put("ABRE", "USAR");
         m.put("COLOCAR", "USAR");
+        m.put("COLOCO", "USAR");
+        m.put("COLOCA", "USAR");
         m.put("FECHAR", "USAR");
+        m.put("FECHO", "USAR");
+        m.put("FECHA", "USAR");
 
 
         m.put("FALAR", "FALAR");
+        m.put("FALO", "FALAR");
+        m.put("FALA", "FALAR");
         m.put("DIZER", "FALAR");
+        m.put("DIGO", "FALAR");
+        m.put("DIZ", "FALAR");
 
         m.put("TENTAR", "TESTAR");
         m.put("TESTAR", "TESTAR");
@@ -89,8 +165,18 @@ public class ParserCliente {
         m.put("PROVAR", "TESTAR");
 
         m.put("INVENTARIAR", "INVENTARIO");
+        m.put("ITENS", "INVENTARIO");
+        m.put("COISAS", "INVENTARIO");
+        m.put("TROÇOS", "INVENTARIO");
+        m.put("COISA", "INVENTARIO");
+        m.put("COISO", "INVENTARIO");
+        m.put("TROÇO", "INVENTARIO");
         m.put("INVENTÁRIO", "INVENTARIO");
         m.put("INVENTARIO", "INVENTARIO");
+
+        m.put("REDOR", "LUGAR");
+        m.put("AMBIENTE", "LUGAR");
+        m.put("LUGAR", "LUGAR");
 
         SYNONYMS = Collections.unmodifiableMap(m);
     }

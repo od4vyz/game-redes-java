@@ -46,7 +46,7 @@ public class Main {
             String comando = scanner.nextLine();
 
             // Condição de saída para terminar o teste
-            if (comando.equalsIgnoreCase("sair")) {
+            if (comando.equalsIgnoreCase("SAIRDOJOGO")) {
                 System.out.println("Obrigado por jogar!");
                 break;
             }
