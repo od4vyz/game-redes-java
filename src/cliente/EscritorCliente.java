@@ -8,12 +8,12 @@ public class EscritorCliente implements Runnable {
     private PrintWriter saida;
     private Scanner scanner;
 
-    // private ParserCliente parser;
+    private ParserCliente parser;
 
     EscritorCliente(PrintWriter saida, Scanner scanner){
         this.saida = saida;
         this.scanner = scanner;
-        // this.parser = new ParserCliente();
+        this.parser = new ParserCliente();
     }
 
     @Override
@@ -26,8 +26,8 @@ public class EscritorCliente implements Runnable {
         while (true) {
             try{
                 String mensagem = scanner.nextLine(); //le a entrada do usuario
-                // String mensagemProtocolo = parser.Analisar(mensagem);
-                // saida.println(mensagemProtocolo); //envia mensagem para o servidor
+                String mensagemProtocolo = parser.Analisar(mensagem);
+                saida.println(mensagemProtocolo); //envia mensagem para o servidor
                 saida.println(mensagem);
             }catch(Exception e){
                 System.out.println("Erro ao enviar mensagem. "+ e.getMessage());

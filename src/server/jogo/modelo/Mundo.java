@@ -42,7 +42,7 @@ public class Mundo {
 
         galeria.adicionarDetalhe("QUADRO 1",
                 "Você anda até o quadro 1, ele aparenta ser um Pato roxo com um longo bico e concha em sua barriga.");
-        galeria.adicionarDetalhe("quadro 2", "É um Rinoceronte magro, verde com grandes orelhas e um chifre quadrado.");
+        galeria.adicionarDetalhe("QUADRO 2", "É um Rinoceronte magro, verde com grandes orelhas e um chifre quadrado.");
         galeria.adicionarDetalhe("QUADRO 3",
                 "É uma girafa azul, ela aparenta ter asas enormes e uma baita barba com um formato cilíndrico.");
         galeria.adicionarDetalhe("QUADRO 4",

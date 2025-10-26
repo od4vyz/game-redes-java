@@ -106,7 +106,7 @@ public class ConexaoJogador implements Runnable {
         String mensagem;
 
         if(comando.equals("FALAR")){
-            mensagem = "CHAT|" + player.getNome() + "|" + parametros[1];
+            mensagem = "CHAT|" + player.getNome() + "|" + parametros[0];
             broadcast(mensagem);
             return null;
         }else{
