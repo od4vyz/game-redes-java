@@ -3,6 +3,7 @@ package cliente;
 import java.io.*;
 import java.util.Scanner;
 import java.net.Socket;
+import Parser.*;
 
 public class Cliente {
 
@@ -14,10 +15,12 @@ public class Cliente {
     private BufferedReader entrada;
 
     private Scanner scanner;
+    private ParserCliente parser;
 
     public Cliente(){        
         this.port = 9020;
         this.scanner = new Scanner(System.in);
+        this.parser = new ParserCliente();
     }
 
     public void iniciarConexao(){
@@ -37,7 +40,7 @@ public class Cliente {
 
             // inicializa as instancias responsaveis pela comunicacao do lado cliente
             LeitorCliente leitor = new LeitorCliente(entrada);
-            EscritorCliente escritor = new EscritorCliente(saida, scanner);
+            EscritorCliente escritor = new EscritorCliente(saida, scanner, parser);
 
             // cria as threads para gerenciar essas instancias
             Thread threadLeitura = new Thread(leitor);
