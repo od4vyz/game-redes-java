@@ -10,9 +10,9 @@ public class Engine {
     public Sala SalaJogador1;
     public Sala SalaJogador2;
 
-    public Engine(Jogador jogador) {
+    /*public Engine(Jogador jogador) {
         this.jogador = jogador;
-    }
+    }*/
 
     public Map<String, String> getEstadoAtual() {
         return Map.of(

@@ -22,7 +22,7 @@ public class ParserCliente {
 
     //Conjunto de ações
     private static final Set<String> ACTIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-        "OLHAR", "IR", "PEGAR", "USAR", "FALAR", "TESTAR", "INVENTARIO", "CONECTAR"
+        "OLHAR", "IR", "PEGAR", "USAR", "FALAR", "TESTAR", "INVENTARIO", "CONECTAR", "SAIRDOJOGO"
     )));
 
     // Mapa de sinônimos: formas variadas -> forma canônica (ex.: "enxergar" -> "OLHAR")
@@ -177,6 +177,9 @@ public class ParserCliente {
                 }
 
             case "INVENTARIO":
+                return comando;
+            
+            case "SAIRDOJOGO":
                 return comando;
 
             case "IR":

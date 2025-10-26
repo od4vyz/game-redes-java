@@ -30,7 +30,7 @@ public class Main {
         Engine.adicionarJogador(jogadorDeTeste);
 
         System.out.println("--- Jogo de Teste Local iniciado ---");
-        System.out.println("Digite 'sair' a qualquer momento para terminar.");
+        System.out.println("Digite 'SAIRDOJOGO' a qualquer momento para terminar.");
         System.out.println("----------------------------------------");
 
         // Exibe a primeira descrição do local para o jogador
