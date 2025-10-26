@@ -19,7 +19,9 @@ public class ParserCliente {
         "AO", "AOS", "À", "ÀS", "DO", "DA", "DOS", "DAS", "NO", "NA", "NOS", "NAS", "PELO",
         "PELA", "PELOS", "PELAS", "NUM", "NUMA", "NUNS", "NUMAS", "DUM", "DUMA", "DUMS", "DUMAS", "DUNS", "ONDE", "QUE", "QUAL", "QUAIS", "QUEM", "CUJO", "CUJA", "CUJOS", "CUJAS",
         "ME", "TE", "SE", "NOS", "VOS", "LHE", "LHES", "MIM", "TI", "SI", "QUAL", "QUAIS", "COMIGO", "CONTIGO", "CONSIGO", "EU", "TU", "ELE", "ELA", "NÓS", "VÓS", "ELES", "ELAS", "MEU",
-        "MINHA", "MEUS", "MINHAS", "TEU", "TUA", "TEUS", "TUAS", "SEU", "SUA", "SEUS", "SUAS", "NOSSO", "NOSSA", "NOSSOS", "NOSSAS", "VOSSO", "VOSSA", "VOSSOS", "VOSSAS"
+        "MINHA", "MEUS", "MINHAS", "TEU", "TUA", "TEUS", "TUAS", "SEU", "SUA", "SEUS", "SUAS", "NOSSO", "NOSSA", "NOSSOS", "NOSSAS", "VOSSO", "VOSSA", "VOSSOS", "VOSSAS",
+        "ESTÁ", "ESTAO", "ESTAMOS", "ESTAIS", "ESTÃO", "SOU", "SOMOS", "SOIS", "SÃO", "FUI", "FOMOS", "FOSTES", "FORAM", "TÁ", "OQUE", "PQ", "PORQUE", "PORQUÊ", "POR QUÊ", "TODO", 
+        "TODA", "TODOS", "TODAS", "TUDO", "ALGO", "NADA", "NENHUM", "NENHUMA", "NENHUNS", "NENHUMAS"
     )));
 
     //Conjunto de ações
@@ -177,6 +179,12 @@ public class ParserCliente {
         m.put("REDOR", "LUGAR");
         m.put("AMBIENTE", "LUGAR");
         m.put("LUGAR", "LUGAR");
+        
+        m.put("LUZ", "LUZ");
+        m.put("INTERRUPTOR", "INTERRUPTOR");
+
+        m.put("ESCADA", "ESCADA");
+        m.put("ESCADARIA", "ESCADA");
 
         SYNONYMS = Collections.unmodifiableMap(m);
     }
