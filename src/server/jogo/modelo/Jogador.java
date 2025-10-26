@@ -15,9 +15,8 @@ public class Jogador {
     private boolean temPaoMofado;
     private boolean temChave;
 
-    public Jogador(String nome, Sala salaInicial) {
+    public Jogador(String nome) {
         this.nome = nome;
-        this.salaAtual = salaInicial;
         this.inventario = new ArrayList<>();
         this.ingredientesPegos = new HashSet<>();
         this.temFoice = false;

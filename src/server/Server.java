@@ -18,7 +18,7 @@ public class Server {
     public Server(){
         this.port = 9020;
         conexoesAtivas = new CopyOnWriteArrayList<>(); //implementacao preparada para concorrencia
-        // this.engine = new Engine(    );
+        this.engine = new Engine();
     }
 
     public void iniciarConexao(){
@@ -30,7 +30,7 @@ public class Server {
             while(true){
                 Socket client = server.accept(); //estabelece conexao com o cliente
 
-                ConexaoJogador conexao = new ConexaoJogador(client, conexoesAtivas); //instancia a conexao com um jogador
+                ConexaoJogador conexao = new ConexaoJogador(client, conexoesAtivas, engine); //instancia a conexao com um jogador
                 Thread threadConexao = new Thread(conexao); // cria uma thread para gerenciar essa conexao
                 threadConexao.start(); // inicia a thread
 

@@ -1,423 +1,576 @@
 package server.jogo;
 
-
+import java.util.HashMap;
 import java.util.Map;
 import server.jogo.modelo.*;
 
 public class Engine {
-    private Jogador jogador;
-    private Jogador jogador2;
+    private Map<String, Jogador> jogadoresConectados;
     public Sala SalaJogador1;
     public Sala SalaJogador2;
 
-    public Engine(Jogador jogador) {
-        this.jogador = jogador;
+    private Mundo mundoLoader;
+
+    public Engine() {
+        this.jogadoresConectados = new HashMap<>();
+
+        this.mundoLoader = new Mundo();
+        this.mundoLoader.configurarNavegacao();
+
+        this.SalaJogador1 = mundoLoader.getDeposito();
+        this.SalaJogador2 = mundoLoader.getGaleria();
+
+        SistemaNotificacao.getInstance().limparEventos();
+        EstadoGlobal.getInstance().reset();
     }
 
-    public Map<String, String> getEstadoAtual() {
-        return Map.of(
-                "salaAtual", jogador.getSalaAtual().getDescricaoInicial(),
-                "inventario", jogador.InventarioString());
+    /*-------------MÉTODO GERADO POR IA-------------*/
+    public synchronized String conectarJogador(String nome) {
+        // Verificar se o nome já está em uso
+        if (jogadoresConectados.containsKey(nome)) {
+            return "ERRO|O nome '" + nome + "' já está em uso.";
+        }
+
+        // Verificar se o jogo está cheio (lógica para 2 jogadores)
+        if (jogadoresConectados.size() >= 2) {
+            return "ERRO|O servidor está cheio.";
+        }
+
+        // Criar o novo objeto Jogador
+        Jogador novoJogador = new Jogador(nome);
+        
+        // Atribuir a sala inicial correta (Player 1 ou Player 2)
+        if (jogadoresConectados.size() == 0) {
+            // Este é o primeiro jogador
+            System.out.println("Jogador 1 conectado: " + nome);
+            novoJogador.setSalaAtual(this.SalaJogador1);
+        } else {
+            // Este é o segundo jogador
+            System.out.println("Jogador 2 conectado: " + nome);
+            novoJogador.setSalaAtual(this.SalaJogador2);
+        }
+
+        // Adicionar o jogador ao gerenciador
+        jogadoresConectados.put(nome, novoJogador);
+        
+        // Retornar a primeira descrição da sala (protocolo DESCRICAO)
+        return "DESCRICAO|" + novoJogador.getSalaAtual().getDescricaoInicial();
     }
 
-    public void setMundo(Sala mundo) {
-        this.SalaJogador1 = mundo;
+    public Jogador getJogador(String nome) {
+        return jogadoresConectados.get(nome);
     }
 
-    public void setMundo2(Sala mundo) {
-        this.SalaJogador2 = mundo;
+    public synchronized void desconectarJogador(Jogador jogador) {
+        if (jogador != null) {
+            jogadoresConectados.remove(jogador.getNome());
+        }
     }
+    /*-----------------------------------------*/
 
-    public void adicionarJogador(Jogador jogador) {
-        this.jogador = jogador;
-    }
-
-    public void adicionarJogador2(Jogador jogador2) {
-        this.jogador2 = jogador2;
-    }
-
-    public Map<String, Jogador> getJogador() {
-        return Map.of("jogador", jogador);
-    }
-
-    public String processarComando(Jogador jogador, String comando) {
+    public String processarComando(Jogador jogador, String comando, String parametros[]) {
         Sala localAtual = jogador.getSalaAtual();
-        String[] palavras = comando.toLowerCase().split(" ");
-        String acao = palavras[0];
 
-        // --- LÓGICA DO DEPÓSITO ---
-        if (localAtual.getNome().equals("Depósito")) {
-            boolean luzAcesa = (boolean) localAtual.getEstado("luzAcesa");
+        switch (localAtual.getNome()) {
+            /**********LOGICA DO DEPOSITO**********/
+            case "Depósito":
+                boolean luzAcesa = (boolean) localAtual.getEstado("luzAcesa");
+                switch (comando) {
+                    case "OLHAR":
+                        //se a luz ainda nao foi acesa:
+                        if (parametros[0].contains("AMBIENTE")) {
+                            return "DESCRICAO|" + localAtual.getDescricaoCompleta();
+                        }
 
-            if (acao.equals("apertar") || acao.equals("ligar") && comando.contains("interruptor")) {
-                if (!luzAcesa) {
-                    localAtual.setEstado("luzAcesa", true);
-                    localAtual.setDescricaoLonga(localAtual.getDescricaoAlternativa("descricaoLuzAcesa"));
-                    return "ATUALIZACAO Você anda em direção ao interruptor e o pressiona. \n"
-                            + localAtual.getDescricaoAlternativa("descricaoLuzAcesa");
-                } else {
-                    return "ATUALIZACAO O interruptor já está pressionado.";
+                        if (!luzAcesa) {
+                            return "DESCRICAO|Está escuro demais para fazer isso.";
+                        }
+
+                        //ao olhar a porta:
+                        if (parametros[0].contains("PORTA")) {
+                            return "DESCRICAO|Se esforçando um pouco, você vê alguns símbolos estranhos: um triângulo, um quadrado e um círculo.\\n";
+                                    // + "SYSTEM TIP: Para OLHAR mais de perto a fechadura, use: OLHAR fechadura";
+                        }
+
+                        //ao analisar a fechadura:
+                        if (parametros[0].contains("FECHADURA")) {
+                            return "DESCRICAO|A fechadura possui 3 desenhos de animais. Você observa muitos animais em cada uma das voltas, dentre elas um Cachorro, Pato, Elefante, Rinoceronte, Borboleta, Lobo, Dinossauro, Avestruz, Leão, Peixe.\\n[SYSTEM TIP] Para testar uma combinação, digite 'testar A B C', sendo que 'A B C' é a inicial do animal (a ordem importa).";
+                        }
+                        break;
+
+                    case "USAR":
+                        //quando o player aperta o interruptor:
+                        if (parametros[0].contains("INTERRUPTOR")) {
+                            if (!luzAcesa) {
+                                localAtual.setEstado("luzAcesa", true);
+                                localAtual.setDescricaoLonga(localAtual.getDescricaoAlternativa("descricaoLuzAcesa"));
+                                return "DESCRICAO|Você anda em direção ao interruptor e o pressiona. "
+                                        + localAtual.getDescricaoAlternativa("descricaoLuzAcesa");
+                            } else {
+                                return "DESCRICAO|O interruptor já está pressionado.";
+                            }
+                        }
+
+                        // ABRIR PORTA (só funciona após resolver o puzzle)
+                        if (parametros[0].contains("PORTA")) {
+                            boolean portaAberta = (boolean) localAtual.getEstado("portaAberta");
+                            if (portaAberta) {
+                                return "DESCRICAO|A porta já está aberta! Uma escada está adiante de você.";
+                            } else {
+                                return "DESCRICAO|A porta está trancada. Preciso resolver o puzzle da fechadura primeiro.";
+                            }
+                        }
+                        break;
+
+                    case "IR":
+                        // SUBIR ESCADA (transição para o Hall - Capítulo 2)
+                        if (parametros[0].contains("ESCADAS")) {
+                            boolean portaAberta = (boolean) localAtual.getEstado("portaAberta");
+                            Sala proximaSala = localAtual.getSaida("hall");
+                            if (portaAberta) {
+                                jogador.setSalaAtual(proximaSala);
+                                EstadoGlobal.getInstance().setJogador1NoHall(true);
+                                return "DESCRICAO|" + proximaSala.getDescricaoInicial();
+                            } else {
+                                return "DESCRICAO|Não há escada disponível. Preciso abrir a porta primeiro.";
+                            }
+                        }
+
+                        // // NAVEGAÇÃO LIVRE DO DEPÓSITO (quando porta estiver aberta)
+                        // if ((boolean) localAtual.getEstado("portaAberta")) {
+                        //     // Se a porta estiver aberta, permitir navegação automática
+                        //     for (String palavra : parametros) {
+                        //         if (localAtual.getSaida(palavra) != null) {
+                        //             if (palavra.contains("hall"))
+                        //                 return "TRANSICAO_HALL";
+                        //         }
+                        //     }
+                        // }
+                        break;
+                    
+                    case "TESTAR":
+                        // O PUZZLE!
+                        if (parametros.length < 3){
+                            return "ERRO|Formato inválido. Use: TESTAR A B C";
+                        }
+
+                        // A solução do puzzle baseada nas pistas
+                        if (parametros[0].equalsIgnoreCase("A") && parametros[1].equalsIgnoreCase("R")
+                                && parametros[2].equalsIgnoreCase("P")) {
+                            // SUCESSO! Marca o estado global e local
+                            EstadoGlobal.getInstance().setPortasAbertas(true);
+                            localAtual.setEstado("portaAberta", true);
+                            localAtual.setDescricaoLonga(localAtual.getDescricaoAlternativa("descricaoPortaAberta"));
+                            
+                            return "NARRACAO|A porta se abre com um clique alto! Uma escada está adiante de você.";
+                        } else {
+                            return "DESCRICAO|Nada acontece. A combinação parece estar errada.";
+                        }
+                
+                    default:
+                        break;
                 }
-            }
+                break;
 
-            // A partir daqui, só funciona se a luz estiver acesa
-            if (!luzAcesa && !acao.equals("observar") && !acao.equals("olhar")) {
-                return "ERRO Está escuro demais para fazer isso.";
-            }
+            /**********LOGICA DA GALERIA**********/
+            case "Galeria":
+                boolean portasAbertas = EstadoGlobal.getInstance().isPortasAbertas();
+                switch (comando) {
+                    case "OLHAR":
+                        if (parametros[0].contains("AMBIENTE")) {
+                            if (EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
+                                return "DESCRICAO|A galeria é a mesma porém uma das molduras se abriu como uma porta. Você pode ir para a 'casa principal' (Hall) através da porta secreta.";
+                            }
+                            return "DESCRICAO|" + localAtual.getDescricaoCompleta(); 
+                        }
 
-            if ((acao.equals("verificar") || acao.equals("ler")) && comando.contains("porta")
-                    || acao.equals("olhar") && comando.contains("porta")) {
-                return "ATUALIZACAO Se esforçando um pouco você vê alguns símbolos estranhos: um triângulo, um quadrado e um círculo.\n"
-                        + "SYSTEM TIP: Para olhar mais de perto a fechadura, use: olhar fechadura";
-            }
+                        // OBSERVAR PORTA (apenas para observação, não movimento)
+                        if (parametros[0].contains("PORTA")) {
+                            if (portasAbertas) {
+                                // Atualiza descrição da galeria se as portas foram abertas
+                                if (!(boolean) localAtual.getEstado("portaAberta")) {
+                                    localAtual.setEstado("portaAberta", true);
+                                    localAtual.setDescricaoLonga(localAtual.getDescricaoAlternativa("descricaoPortaAberta"));
+                                    return "DESCRICAO|" + localAtual.getDescricaoAlternativa("descricaoPortaAberta");
+                                } else {
+                                    return "DESCRICAO|A porta atrás de você está aberta. Um som de aves e uma leve brisa saem dela. Você pode ir para a fazenda.";
+                                }
+                            } else {
+                                return "DESCRICAO|É uma porta aparentemente normal porém algo a distingue das outras, ela não tem fechadura nem maçaneta se tornando impossível de abrir.";
+                            }
+                        }
 
-            if ((acao.equals("verificar") || acao.equals("olhar") || acao.equals("ler"))
-                    && comando.contains("fechadura")) {
-                return "ATUALIZACAO A fechadura possui 3 desenhos de animais, você observa muitos animais em cada uma das voltas, dentre eles tem um Cachorro, Pato, Elefante, Rinoceronte, Borboleta, Lobo, Dinossauro, Avestruz, Leão, Peixe. SYSTEM TIP: Para testar a combinação escreva: testar A B C onde A B C é a inicial do animal e a ordem importa.";
-            }
+                        if (parametros[0].contains("QUADRO")) { 
+                            return "DESCRICAO|Você está muito longe para ver os detalhes. Tente 'ir quadro <numero>'.";
+                        }
+                        break;
 
-            // O PUZZLE!
-            if (acao.equals("testar")) {
-                if (palavras.length < 4)
-                    return "ERRO Formato inválido. Use: testar A B C";
+                    case "USAR":
+                        if (parametros[0].contains("PORTA")) {
+                            if (portasAbertas) {
+                                return "DESCRICAO|A porta já está aberta! Você pode entrar.";
+                            } else {
+                                return "DESCRICAO|Impossível abrir a porta, não tem maçaneta.";
+                            }
+                        }
+                        break;
 
-                // A solução do puzzle baseada nas pistas
-                if (palavras[1].equalsIgnoreCase("A") && palavras[2].equalsIgnoreCase("H")
-                        && palavras[3].equalsIgnoreCase("P")) {
-                    // SUCESSO! Marca o estado global e local
-                    EstadoGlobal.getInstance().setPortasAbertas(true);
-                    localAtual.setEstado("portaAberta", true);
-                    localAtual.setDescricaoLonga(localAtual.getDescricaoAlternativa("descricaoPortaAberta"));
-                    return "EVENTO_PORTAS_ABERTAS";
-                } else {
-                    return "ATUALIZACAO Nada acontece. A combinação parece estar errada.";
+                    case "IR":
+                        if (parametros[0].contains("QUADRO") && parametros.length > 1) {
+                            String numeroQuadro = parametros[1]; // O número é o segundo parâmetro
+                                String detalhe = localAtual.getDetalhe("quadro " + numeroQuadro);
+                                return (detalhe != null) ? "DESCRICAO|" + detalhe : "ERRO|Não consigo encontrar esse quadro.";
+                        }
+
+                        // ENTRAR/IR PARA A FAZENDA (Capítulo 2)
+                        if (parametros[0].contains("PORTA") || parametros[0].contains("FAZENDA")) {
+                            if (portasAbertas) {
+                                Sala proximSala = localAtual.getSaida("fazenda");
+                                jogador.setSalaAtual(proximSala);
+                                EstadoGlobal.getInstance().setJogador2NaFazenda(true);
+                                return "DESCRICAO|" + proximSala.getDescricaoInicial();
+                            } else {
+                                return "DESCRICAO|A porta ainda não está aberta.";
+                            }
+                        }
+
+                        // Ir para Hall via porta secreta
+                        if (parametros[0].equals("HALL")) {
+                            if (EstadoGlobal.getInstance().isCaldeiraoAtivo()) { // Só funciona se caldeirão ativo
+                                Sala proximaSala = localAtual.getSaida("hall");
+                                jogador.setSalaAtual(proximaSala);
+                                return "DESCRICAO|" + proximaSala.getDescricaoInicial();
+                            } else {
+                                return "ERRO|Não há passagem disponível para o hall.";
+                            }
+                        }
+                        break;
+                
+                    default:
+                        break;
                 }
-            }
+                break;
 
-            // ABRIR PORTA (só funciona após resolver o puzzle)
-            if (acao.equals("abrir") && comando.contains("porta")) {
-                boolean portaAberta = (boolean) localAtual.getEstado("portaAberta");
-                if (portaAberta) {
-                    return "ATUALIZACAO A porta já está aberta! Uma escada está adiante de você. Use: subir escada";
-                } else {
-                    return "ERRO A porta está trancada. Preciso resolver o puzzle da fechadura primeiro.";
+            /***********LOGICA DO HALL*********/
+            case "Hall":                    
+                switch (comando) {
+                    case "OLHAR":
+                        if (parametros[0].equals("AMBIENTE")) {
+                            if (EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
+                                return "DESCRICAO|" + localAtual.getDescricaoCompleta() + "\\nUma passagem secreta se abriu na parede à esquerda, você pode ir para a 'galeria' através dela.";
+                            }
+                            return "DESCRICAO|" + localAtual.getDescricaoCompleta(); 
+                        }
+
+                        // Observar a porta
+                        if (parametros[0].contains("PORTA")) {
+                            return "DESCRICAO|A porta está trancada.";
+                        }
+
+                        if (!parametros[0].contains("fechadura") && !parametros[0].contains("porta") && EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
+                            return "DESCRICAO|" + localAtual.getDescricaoCompleta() + " Uma passagem secreta se abriu na parede à esquerda, você pode ir para a 'galeria' através dela.";
+                        }
+                        break;
+
+                    case "USAR":
+                        // Usar chave na porta
+                        if (parametros[0].contains("CHAVE") && parametros[1].contains("PORTA")) {
+                            if (!jogador.isTemChave()) {
+                                return "ERRO|Você não tem uma chave.";
+                            }
+
+                            // Primeira tentativa - porta errada
+                            return "NARRACAO|Vocês tentaram usar a chave na porta porém ela não encaixa, é estranho pois parece ser exatamente para essa porta, só então você percebe ter colocado na porta errada, eram duas portas, na segunda ela encaixa perfeitamente.\\n\\nFINAL DO JOGO!\\n\\nCom a porta aberta você descobre que estava nO TITANIC NA EAC........";
+                        }
+                        break;
+
+                    case "IR":
+                        if (parametros[0].contains("PORTA")) {
+                            return "DESCRICAO|A porta está trancada.";
+                        }
+
+                        if (parametros[0].contains("COZINHA")) { //
+                            Sala proximaSala = localAtual.getSaida("cozinha");
+                                jogador.setSalaAtual(proximaSala);
+                                EstadoGlobal.getInstance().setLocalizacaoJ1(proximaSala.getNome()); 
+                                return "DESCRICAO|" + proximaSala.getDescricaoInicial(); //
+                        }
+
+                         if (parametros[0].equals("GALERIA")) {
+                             if (EstadoGlobal.getInstance().isCaldeiraoAtivo()) { // Só funciona se caldeirão ativo
+                            Sala proximaSala = localAtual.getSaida("galeria");
+                            jogador.setSalaAtual(proximaSala);
+                            return "DESCRICAO|" + proximaSala.getDescricaoInicial();
+                            } else {
+                                return "ERRO|Não há passagem disponível para a galeria.";
+                            }
+                        }
+                        break;
+                
+                    default:
+                        if (parametros[0].contains("ESCADA") && parametros[1].contains("SUPERIOR")) {
+                            return "DESCRICAO|As escadas levam aos andares superiores, mas isso é para outro capítulo.";
+                        }
+                        break;
                 }
-            }
+                break;
 
-            // SUBIR ESCADA (transição para o Hall - Capítulo 2)
-            if ((acao.equals("subir") || acao.equals("ir")) && comando.contains("escada")) {
-                boolean portaAberta = (boolean) localAtual.getEstado("portaAberta");
-                if (portaAberta) {
-                    EstadoGlobal.getInstance().setJogador1NoHall(true);
-                    return "TRANSICAO_HALL";
-                } else {
-                    return "ERRO Não há escada disponível. Preciso abrir a porta primeiro.";
-                }
-            }
+            /**********LOGICA DA COZINHA**********/
+                case "Cozinha":
+                    switch (comando) {
+                    case "OLHAR": 
+                        if (parametros[0].equals("AMBIENTE")) {
+                                return "DESCRICAO|" + localAtual.getDescricaoCompleta();
+                        }
+                    
+                        if (parametros[0].contains("LISTA")) {
+                            String detalhe = localAtual.getDetalhe("lista de compras");
+                            return "DESCRICAO|" + detalhe;
+                        }
 
-            // NAVEGAÇÃO LIVRE DO DEPÓSITO (quando porta estiver aberta)
-            if ((acao.equals("ir") || acao.equals("andar") || acao.equals("entrar")) &&
-                    (boolean) localAtual.getEstado("portaAberta")) {
-                // Se a porta estiver aberta, permitir navegação automática
-                for (String palavra : palavras) {
-                    if (localAtual.getSaida(palavra) != null) {
-                        if (palavra.equals("hall"))
+                        if (parametros[0].contains("GELADEIRA")) {
+                            String detalhe = localAtual.getDetalhe("geladeira");
+                            return "DESCRICAO|" + detalhe;
+                        }
+                        break;
+
+                    case "PEGAR":                   
+                        if (parametros[0].contains("PAO")) {
+                            String resultado = jogador.pegarPaoMofado();
+                            return "DESCRICAO|" + resultado;
+                        }
+                        break;
+
+                    case "IR":
+                        if (parametros[0].contains("SALA")) {
                             return "TRANSICAO_HALL";
-                    }
+                        }
+
+                        if ((parametros[0].contains("HALL") || parametros[0].contains("PRINCIPAL"))) {
+                            return "TRANSICAO_HALL";
+                        }
+
+                        if (parametros[0].equals("HALL")) {
+                            Sala proximaSala = localAtual.getSaida("hall");
+                            jogador.setSalaAtual(proximaSala);
+                            return "DESCRICAO|" + proximaSala.getDescricaoInicial();
+                        }
+                        break;
+                
+                    default:
+                        break;
                 }
-            }
-        }
-
-        // --- LÓGICA DA GALERIA ---
-        if (localAtual.getNome().equals("Galeria")) {
-            // Verifica se as portas foram abertas pelo Jogador 1
-            boolean portasAbertas = EstadoGlobal.getInstance().isPortasAbertas();
-
-            // ENTRAR/IR PARA A FAZENDA (Capítulo 2) - PRIMEIRO VERIFICAR TRANSIÇÕES
-            if (((acao.equals("entrar") || acao.equals("ir")) && comando.contains("porta")) ||
-                    (acao.equals("entrar") && !comando.contains("quadro"))) {
-                if (portasAbertas) {
-                    EstadoGlobal.getInstance().setJogador2NaFazenda(true);
-                    return "TRANSICAO_FAZENDA";
-                } else {
-                    return "ERRO A porta ainda não está aberta.";
-                }
-            }
-
-            // OBSERVAR PORTA (apenas para observação, não movimento)
-            if ((acao.equals("observar") || acao.equals("olhar")) && comando.contains("porta")) {
-                if (portasAbertas) {
-                    // Atualiza descrição da galeria se as portas foram abertas
-                    if (!(boolean) localAtual.getEstado("portaAberta")) {
-                        localAtual.setEstado("portaAberta", true);
-                        localAtual.setDescricaoLonga(localAtual.getDescricaoAlternativa("descricaoPortaAberta"));
-                        return "ATUALIZACAO " + localAtual.getDescricaoAlternativa("descricaoPortaAberta");
-                    } else {
-                        return "ATUALIZACAO A porta atrás de você está aberta. Você pode entrar na fazenda.";
-                    }
-                } else {
-                    return "ATUALIZACAO É uma porta aparentemente normal porém algo a distingue das outras, ela não tem fechadura nem maçaneta se tornando impossível de abrir.";
-                }
-            }
-
-            if (acao.equals("abrir") && comando.contains("porta")) {
-                if (portasAbertas) {
-                    return "ATUALIZACAO A porta já está aberta automaticamente! Você pode entrar.";
-                } else {
-                    return "ATUALIZACAO Impossível abrir a porta, não tem maçaneta.";
-                }
-            }
-
-            if ((acao.equals("andar") || acao.equals("ir") || acao.equals("observar")) && comando.contains("quadro")) {
-                String numeroQuadro = palavras[palavras.length - 1]; // Pega o último elemento, que deve ser o número
-                String detalhe = localAtual.getDetalhe("quadro " + numeroQuadro);
-                if (detalhe != null) {
-                    return "ATUALIZACAO " + detalhe;
-                } else {
-                    return "ERRO Não consigo encontrar esse quadro.";
-                }
-            }
-        }
-
-        // --- LÓGICA DO HALL (Capítulo 2 e 3) ---
-        if (localAtual.getNome().equals("Hall")) {
-            // Observar ou ir até a porta
-            if (comando.contains("porta") && (comando.contains("saida") || comando.contains("saída")
-                    || acao.equals("ir") || acao.equals("observar"))) {
-                return "ATUALIZACAO A porta está trancada.";
-            }
-
-            // Usar chave na porta
-            if ((acao.equals("usar") || acao.equals("abrir")) && comando.contains("chave")
-                    && comando.contains("porta")) {
-                if (!jogador.isTemChave()) {
-                    return "ERRO Você não tem uma chave.";
-                }
-
-                // Primeira tentativa - porta errada
-                return "ATUALIZACAO Você tentou usar a chave na porta porém ela não encaixa, é estranho pois parece ser exatamente para essa porta, só então você percebe ter colocado na porta errada, eram duas portas, na segunda ela encaixa perfeitamente.\n\nFINAL DO JOGO!\n\nCom a porta aberta você descobre que estava NO TITANIC NA EAC........";
-            }
-
-            if (comando.contains("escada") && comando.contains("superior")) {
-                return "ATUALIZACAO As escadas levam aos andares superiores, mas isso é para outro capítulo.";
-            }
-        }
-
-        // --- LÓGICA DA COZINHA (Capítulo 2) ---
-        if (localAtual.getNome().equals("Cozinha")) {
-            if ((acao.equals("ir") || acao.equals("ler") || acao.equals("olhar")) && comando.contains("lista")) {
-                String detalhe = localAtual.getDetalhe("lista de compras");
-                return "ATUALIZACAO " + detalhe;
-            }
-
-            if ((acao.equals("abrir") || acao.equals("olhar")) && comando.contains("geladeira")) {
-                String detalhe = localAtual.getDetalhe("geladeira");
-                return "ATUALIZACAO " + detalhe;
-            }
-
-            if ((acao.equals("pegar") || acao.equals("tocar")) && comando.contains("pao")) {
-                String resultado = jogador.pegarPaoMofado();
-                return "ATUALIZACAO " + resultado;
-            }
-
-            if ((acao.equals("voltar") || acao.equals("ir")) && comando.contains("sala")) {
-                return "TRANSICAO_HALL";
-            }
-
-            if ((acao.equals("voltar") || acao.equals("ir"))
-                    && (comando.contains("hall") || comando.contains("principal"))) {
-                return "TRANSICAO_HALL";
-            }
-        }
-
-        // --- LÓGICA DA FAZENDA (Capítulo 2) ---
-        if (localAtual.getNome().equals("Fazenda")) {
-            // Importar o tipo Fazenda para ter acesso aos métodos específicos
-            if (localAtual instanceof Fazenda) {
+                break;
+            
+            /**********LOGICA DA FAZENDA**********/
+            case "Fazenda":
+                if (localAtual instanceof Fazenda) {
                 Fazenda fazenda = (Fazenda) localAtual;
 
-                // Usar foice para pegar ingredientes
-                if (acao.equals("usar") && palavras.length >= 3 && palavras[1].equals("foice")) {
-                    String ingrediente = palavras[2];
+                switch (comando) {
+                    case "OLHAR":
+                             if (parametros[0].contains("AMBIENTE")) {
+                                 return "DESCRICAO|" + fazenda.observar();
+                            }
+                            String ingredienteOlhar = parametros[0];
+                            if (fazenda.ingredienteDisponivel(ingredienteOlhar)) {
+                                 return "DESCRICAO|" + fazenda.observarIngrediente(ingredienteOlhar);
+                            }
+                            break;
 
-                    if (!jogador.isTemFoice()) {
-                        return "ERRO Você não tem uma foice. Vá ao moinho para pegar uma.";
+                    case "USAR":
+                        // Usar foice para pegar ingredientes
+                        if (parametros[0].contains("foice")) {
+
+                            if (!jogador.isTemFoice()) {
+                                return "ERRO Você não tem uma foice. Vá ao moinho para pegar uma.";
+                            }
+
+                            String ingrediente = parametros[0];
+                            if (fazenda.ingredienteDisponivel(ingrediente)) {
+                                 return "DESCRICAO|" + fazenda.observarIngrediente(ingrediente);
+                            }
+
+                            if (!fazenda.ingredienteDisponivel(ingrediente)) {
+                                return "ERRO Não há " + ingrediente + " aqui. Ingredientes disponíveis: " +
+                                        String.join(", ", fazenda.getIngredientesDisponiveis());
+                            }
+
+                            return "DESCRICAO|" + jogador.coletarIngrediente(ingrediente);
+                        }
+                        break;
+
+                    case "IR":
+                             if (parametros[0].contains("GALERIA")) {
+                                Sala proximaSala = localAtual.getSaida("galeria");
+                                jogador.setSalaAtual(proximaSala);
+                                EstadoGlobal.getInstance().setLocalizacaoJ2(proximaSala.getNome());
+                                return "DESCRICAO|" + proximaSala.getDescricaoInicial();
+                            }
+
+                            if (parametros[0].contains("MOINHO")) { 
+                                Sala proximaSala = localAtual.getSaida("moinho");
+                                jogador.setSalaAtual(proximaSala);
+                                return "DESCRICAO|" + proximaSala.getDescricaoInicial(); 
+                            }
+                        break;
+                
+                    default:
+                        break;
                     }
-
-                    if (!fazenda.ingredienteDisponivel(ingrediente)) {
-                        return "ERRO Não há " + ingrediente + " aqui. Ingredientes disponíveis: " +
-                                String.join(", ", fazenda.getIngredientesDisponiveis());
-                    }
-
-                    return "ATUALIZACAO " + jogador.coletarIngrediente(ingrediente);
                 }
-
-                // Observar ingredientes específicos
-                for (String ingrediente : fazenda.getIngredientesDisponiveis()) {
-                    if (comando.contains(ingrediente)) {
-                        return "ATUALIZACAO " + fazenda.observarIngrediente(ingrediente);
-                    }
-                }
-            }
-
-            if ((acao.equals("voltar") || acao.equals("ir")) && comando.contains("galeria")) {
-                // Notificar jogador 1 sobre movimento do jogador 2
-                return "TRANSICAO_GALERIA";
-            }
-
-            if ((acao.equals("ir") || acao.equals("entrar")) && comando.contains("moinho")) {
-                return "TRANSICAO_MOINHO";
-            }
-        }
-
-        // --- LÓGICA DO MOINHO (Capítulo 2) ---
-        if (localAtual.getNome().equals("Moinho")) {
-            // Importar o tipo Moinho para ter acesso aos métodos específicos
-            if (localAtual instanceof Moinho) {
+                break;
+                
+            /**********LOGICA DO MOINHO**********/
+            case "Moinho":
+                 if (localAtual instanceof Moinho) {
                 Moinho moinho = (Moinho) localAtual;
 
-                // Pegar foice
-                if ((acao.equals("pegar") || acao.equals("pegar")) && comando.contains("foice")) {
-                    String resultado = jogador.pegarFoice();
-                    return "ATUALIZACAO " + resultado;
-                }
+                switch (comando) {
+                    case "OLHAR":
+                            if (parametros[0].equals("AMBIENTE")) {
+                                 return "DESCRICAO|" + moinho.observar(); 
+                            }
+                        break; // Cai para comandos básicos
 
-                // Pegar colher
-                if ((acao.equals("pegar") || acao.equals("pegar")) && comando.contains("colher")) {
-                    String resultado = jogador.pegarColher();
-                    return "ATUALIZACAO " + resultado;
-                }
-
-                // Colocar ingrediente no caldeirão
-                if ((acao.equals("colocar") || acao.equals("adicionar") || acao.equals("por")) &&
-                        comando.contains("caldeirao")) {
-
-                    // Procurar ingrediente no comando
-                    String ingrediente = null;
-                    for (String palavra : palavras) {
-                        if (jogador.temIngrediente(palavra)) {
-                            ingrediente = palavra;
-                            break;
+                    case "PEGAR":
+                        // Pegar foice
+                        if (parametros[0].contains("FOICE")) {
+                            String resultadoMoinho = moinho.pegarFoice();
+                            if (!resultadoMoinho.contains("já pegou")) {
+                                jogador.pegarFoice();
+                            }
+                            return "DESCRICAO|" + resultadoMoinho; 
                         }
+
+                        // Pegar colher
+                        if (parametros[0].contains("COLHER")) {
+                            String resultadoMoinho = moinho.pegarColher();
+                            if (!resultadoMoinho.contains("já pegou")) {
+                                jogador.pegarColher();
+                            }
+                            return "DESCRICAO|" + resultadoMoinho;
+                        }
+                        break;
+
+                    case "USAR":
+                        // Colocar ingrediente no caldeirão
+                        if (parametros[1].contains("CALDEIRAO")) {
+
+                            // Procurar ingrediente no comando
+                            String ingrediente = parametros[0];
+
+                            if (!jogador.temIngrediente(ingrediente)) {
+                                return "ERRO|Você não tem " + ingrediente + ". Ingredientes que você tem: " + String.join(", ", jogador.getIngredientesPegos());
+                            }
+
+                            String resultado = moinho.adicionarIngrediente(ingrediente);
+
+                            // Verificar se o caldeirão ficou ativo e enviar evento
+                            if (moinho.isCaldeiraoAtivo() && !EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
+                                EstadoGlobal.getInstance().setCaldeiraoAtivo(true);
+                                EstadoGlobal.getInstance().setMolduraAberta(true);
+
+                                // Enviar evento para ambos os jogadores sobre barulho
+                                SistemaNotificacao.getInstance().enviarEvento("CALDEIRAO_ATIVO", "Sistema");
+
+                                return "NARRACAO|" + resultado.replace("\n", "\\n");
+                            }
+
+                            return "DESCRICAO|" + resultado.replace("\n", "\\n");
+                        }
+
+                        // Jogar pão no caldeirão
+                        if (parametros[0].contains("PAO") && parametros[1].contains("CALDEIRAO")) {
+
+                            if (!jogador.isTemPaoMofado()) {
+                                return "ERRO|Você não tem pão mofado.";
+                            }
+
+                            String resultado = moinho.jogarPaoNoCaldeirao();
+
+                            if (resultado.contains("chave")) {
+                                if(!jogador.isTemChave()){
+                                    jogador.receberChave();
+                                    EstadoGlobal.getInstance().setChaveObtida(true);
+                                }
+                                return "NARRACAO|" + resultado.replace("\n", "\\n");
+                            }
+                            return "DESCRICAO|Você já pegou a chave.";
+                        }
+                        break;
+                    
+                    case "IR":
+                        if (parametros[0].contains("fazenda")) {
+                            Sala proximaSala = localAtual.getSaida("fazenda");
+                            jogador.setSalaAtual(proximaSala);
+                            return "DESCRICAO|" + proximaSala.getDescricaoInicial();
+                        }
+                        break;
+                
+                    default:
+                        break;
                     }
-
-                    if (ingrediente == null) {
-                        return "ERRO Qual ingrediente você quer colocar no caldeirão? " +
-                                "Ingredientes que você tem: " + jogador.getIngredientesPegos();
-                    }
-
-                    String resultado = moinho.adicionarIngrediente(ingrediente);
-
-                    // Verificar se o caldeirão ficou ativo e enviar evento
-                    if (moinho.isCaldeiraoAtivo() && !EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
-                        EstadoGlobal.getInstance().setCaldeiraoAtivo(true);
-                        EstadoGlobal.getInstance().setMolduraAberta(true);
-
-                        // Enviar evento para ambos os jogadores sobre barulho
-                        SistemaNotificacao.getInstance().enviarEvento("CALDEIRAO_ATIVO", "Sistema");
-
-                        return "EVENTO_CALDEIRAO_ATIVO\n" + resultado;
-                    }
-
-                    return "ATUALIZACAO " + resultado;
                 }
-
-                // Jogar pão no caldeirão
-                if ((acao.equals("jogar") || acao.equals("colocar")) &&
-                        comando.contains("pao") && comando.contains("caldeirao")) {
-
-                    if (!jogador.isTemPaoMofado()) {
-                        return "ERRO Você não tem pão mofado.";
-                    }
-
-                    String resultado = moinho.jogarPaoNoCaldeirao();
-                    if (resultado.contains("chave")) {
-                        jogador.receberChave();
-                        EstadoGlobal.getInstance().setChaveObtida(true);
-                        return "EVENTO_CHAVE_OBTIDA\n" + resultado;
-                    }
-
-                    return "ATUALIZACAO " + resultado;
-                }
-            }
-
-            if ((acao.equals("voltar") || acao.equals("ir") || acao.equals("sair")) &&
-                    (comando.contains("fazenda") || comando.contains("sair") || acao.equals("voltar"))) {
-                return "TRANSICAO_FAZENDA";
-            }
+                break;
+        
         }
 
-        // COMANDOS BÁSICOS (verificados por último)
-        if (acao.equals("inventario") || acao.equals("inventário") || acao.equals("inv")) {
-            return "ATUALIZACAO " + jogador.InventarioString();
-        }
-
-        if (acao.equals("observar") || acao.equals("olhar")
-                || acao.equals("olhar") && !comando.contains("fechadura") && !comando.contains("porta")) {
-
-            // Capítulo 3: Mostrar porta secreta no Hall se caldeirão estiver ativo
-            if (localAtual.getNome().equals("Hall") && EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
-                return "ATUALIZACAO " + localAtual.getDescricaoCompleta() +
-                        " Uma passagem secreta se abriu na parede à esquerda, você pode ir para a 'galeria' através dela.";
-            }
-
-            // Capítulo 3: Mostrar moldura secreta na Galeria se caldeirão estiver ativo
-            if (localAtual.getNome().equals("Galeria") && EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
-                return "ATUALIZACAO A galeria é a mesma porém uma das molduras se abriu como uma porta. Você pode ir para a 'casa principal' através da porta secreta à esquerda.";
-            }
-
-            return "ATUALIZACAO " + localAtual.getDescricaoCompleta();
-        }
-
-        // --- NAVEGAÇÃO AUTOMÁTICA ENTRE SALAS VIZINHAS ---
-        // Verifica se é um comando de movimento para uma sala vizinha
-        if (acao.equals("ir") || acao.equals("andar") || acao.equals("entrar")) {
-
-            // Verificar comandos com múltiplas palavras primeiro
-            if (comando.contains("casa principal")) {
-                if (localAtual.getSaida("casa principal") != null) {
-                    if (localAtual.getNome().equals("Galeria") && !EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
-                        return "ERRO Não há passagem disponível.";
-                    }
-                    return "TRANSICAO_HALL";
+        //--------------COMANDOS BASICOS---------
+        switch (comando) {
+            case "INVENTARIO":
+                return "DESCRICAO|" + jogador.InventarioString().replace("\\n", "\n");
+            
+            case "OLHAR":
+                if (parametros[0].contains("AMBIENTE")) {
+                    return "DESCRICAO|" + localAtual.getDescricaoCompleta();       
                 }
-            }
-
-            // Procura por uma saída que corresponda ao comando
-            for (String palavra : palavras) {
-                if (localAtual.getSaida(palavra) != null) {
-                    // Verificar se é uma saída condicional (porta secreta)
-                    if ((palavra.equals("galeria") || palavra.equals("hall")) &&
-                            (localAtual.getNome().equals("Galeria") || localAtual.getNome().equals("Hall"))) {
-                        // Porta secreta só funciona se caldeirão estiver ativo
-                        if (!EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
+        
+            case "IR":
+                // --- NAVEGAÇÃO AUTOMÁTICA ENTRE SALAS VIZINHAS ---
+                // Verifica se é um comando de movimento para uma sala vizinha
+                // Verificar comandos com múltiplas parametros primeiro
+                if (comando.contains("casa principal")) {
+                    if (localAtual.getSaida("casa principal") != null) {
+                        if (localAtual.getNome().contains("Galeria") && !EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
                             return "ERRO Não há passagem disponível.";
                         }
-                    }
-
-                    // Navegação normal - retorna a transição
-                    if (palavra.equals("galeria"))
-                        return "TRANSICAO_GALERIA";
-                    if (palavra.equals("hall"))
                         return "TRANSICAO_HALL";
-                    if (palavra.equals("cozinha"))
-                        return "TRANSICAO_COZINHA";
-                    if (palavra.equals("fazenda"))
-                        return "TRANSICAO_FAZENDA";
-                    if (palavra.equals("moinho"))
-                        return "TRANSICAO_MOINHO";
+                    }
                 }
-            }
-        }
 
-        // Comandos especiais de volta
-        if (acao.equals("voltar") || acao.equals("sair")) {
-            if (localAtual.getNome().equals("Cozinha")) {
-                return "TRANSICAO_HALL";
-            }
-        }
+                // Procura por uma saída que corresponda ao comando
+                for (String palavra : parametros) {
+                    if (localAtual.getSaida(palavra) != null) {
+                        // Verificar se é uma saída condicional (porta secreta)
+                        if ((palavra.contains("galeria") || palavra.contains("hall")) &&
+                                (localAtual.getNome().contains("Galeria") || localAtual.getNome().contains("Hall"))) {
+                            // Porta secreta só funciona se caldeirão estiver ativo
+                            if (!EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
+                                return "ERRO Não há passagem disponível.";
+                            }
+                        }
 
-        return "ERRO Não entendi o que você quis dizer.";
+                        // Navegação normal - retorna a transição
+                        if (palavra.contains("galeria"))
+                            return "TRANSICAO_GALERIA";
+                        if (palavra.contains("hall"))
+                            return "TRANSICAO_HALL";
+                        if (palavra.contains("cozinha"))
+                            return "TRANSICAO_COZINHA";
+                        if (palavra.contains("fazenda"))
+                            return "TRANSICAO_FAZENDA";
+                        if (palavra.contains("moinho"))
+                            return "TRANSICAO_MOINHO";
+                    }
+                }
+
+                if (localAtual.getNome().contains("Cozinha")) {
+                    return "TRANSICAO_HALL";
+                }
+
+            default:
+                return "ERRO|Não entendi o que você quis dizer.";
+        }                
     }
-
 }

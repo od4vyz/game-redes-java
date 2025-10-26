@@ -17,7 +17,7 @@ public class LeitorCliente implements Runnable{
 
             while((mensagem = entrada.readLine()) != null){
 
-                System.out.println(processarMensagem(mensagem));
+                System.out.println(processarMensagem(mensagem+"\n"));
 
             }   
         }catch(Exception e){
@@ -37,7 +37,8 @@ public class LeitorCliente implements Runnable{
         switch (comando) {
             case "DESCRICAO":
             case "NARRACAO":
-                mensagem = parametros[1];
+                String mensagemRecebida = parametros[1];
+                mensagem = mensagemRecebida.replace("\\n", "\n"); //tratando as quebras de linha
                 break;
 
             case "CHAT":

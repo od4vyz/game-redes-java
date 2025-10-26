@@ -17,7 +17,7 @@ public class Mundo {
         deposito.adicionarEstado("portaAberta", false);
 
         deposito.adicionarDescricaoAlternativa("descricaoLuzAcesa",
-                "O quarto parece uma espece de depósito, diversas caixas espalhadas, uma escada largada no chão e uma porta com uma espécie de fechadora com 3 desenhos de animais, a porta aparenta ser um pouco estranha, parece ter algo escrito nela");
+                "O quarto parece uma espécie de depósito, diversas caixas espalhadas, uma escada largada no chão e uma porta com uma espécie de fechadora com 3 desenhos de animais, a porta aparenta ser um pouco estranha, parece ter algo escrito nela");
 
         deposito.adicionarDescricaoAlternativa("descricaoPortaAberta",
                 "O depósito está iluminado. A porta se abriu revelando uma escada que leva para cima. Você pode subir a escada para sair deste lugar.");
@@ -40,16 +40,16 @@ public class Mundo {
         galeria.adicionarDescricaoAlternativa("descricaoPortaAberta",
                 "A galeria é a mesma, porém a porta atrás de você se abre automaticamente. Um som de aves e uma leve brisa sai dessa porta.");
 
-        galeria.adicionarDetalhe("quadro 1",
+        galeria.adicionarDetalhe("QUADRO 1",
                 "Você anda até o quadro 1, ele aparenta ser um Pato roxo com um longo bico e concha em sua barriga.");
         galeria.adicionarDetalhe("quadro 2", "É um Rinoceronte magro, verde com grandes orelhas e um chifre quadrado.");
-        galeria.adicionarDetalhe("quadro 3",
+        galeria.adicionarDetalhe("QUADRO 3",
                 "É uma girafa azul, ela aparenta ter asas enormes e uma baita barba com um formato cilíndrico.");
-        galeria.adicionarDetalhe("quadro 4",
+        galeria.adicionarDetalhe("QUADRO 4",
                 "É um avestruz laranja de chapéu e meia, seu chapéu tem formato de pirâmide.");
-        galeria.adicionarDetalhe("quadro 5",
+        galeria.adicionarDetalhe("QUADRO 5",
                 "É um dinossauro cinza e feroz aparenta ser um dinossauro comum como qualquer outro que você já tenha visto em um filme porém ele está comendo um snickers, quem desenharia isso?");
-        galeria.adicionarDetalhe("quadro 6",
+        galeria.adicionarDetalhe("QUADRO 6",
                 "Aparenta ser metade leão e metade peixe, é difícil reconhecer pois esse quadro tem uma rachadura no meio.");
 
         return galeria;
