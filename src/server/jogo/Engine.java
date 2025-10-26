@@ -126,7 +126,7 @@ public class Engine {
                         // SUBIR ESCADA (transição para o HALL - Capítulo 2)
                         if (parametros[0].contains("ESCADAS")) {
                             boolean portaAberta = (boolean) localAtual.getEstado("portaAberta");
-                            Sala proximaSala = localAtual.getSaida("HALL");
+                            Sala proximaSala = localAtual.getSaida("hall");
                             if (portaAberta) {
                                 jogador.setSalaAtual(proximaSala);
                                 EstadoGlobal.getInstance().setJogador1NoHall(true);

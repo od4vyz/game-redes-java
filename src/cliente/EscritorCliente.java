@@ -28,7 +28,7 @@ public class EscritorCliente implements Runnable {
                 String mensagem = scanner.nextLine(); //le a entrada do usuario
                 String mensagemProtocolo = parser.Analisar(mensagem);
                 saida.println(mensagemProtocolo); //envia mensagem para o servidor
-                saida.println(mensagem);
+                // saida.println(mensagem);
             }catch(Exception e){
                 System.out.println("Erro ao enviar mensagem. "+ e.getMessage());
                 break;
