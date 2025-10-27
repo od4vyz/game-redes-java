@@ -76,7 +76,7 @@ public class ConexaoJogador implements Runnable {
                 //se remove da lista de conexoes ativas
                 conexoes.remove(this);
                 if (this.player != null) {
-                    engine.desconectarJogador(this.player); // (Outro método que você precisa criar)
+                    engine.desconectarJogador(this.player); 
                 }
             }catch(Exception e){
                 System.out.println("Erro ao encerrar conexao. "+e.getMessage());

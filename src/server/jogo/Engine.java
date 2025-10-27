@@ -152,7 +152,7 @@ public class Engine {
                             localAtual.setEstado("portaAberta", true);
                             localAtual.setDescricaoLonga(localAtual.getDescricaoAlternativa("descricaoPortaAberta"));
                             
-                            return "NARRACAO|A porta se abre com um clique alto! Uma escada está adiante de você.";
+                            return "NARRACAO|A porta se abre com um clique alto! Uma ESCADA está adiante de você.\\nA galeria é a mesma, porém a PORTA atrás de você se abre automaticamente. Um som de aves e uma leve brisa sai dessa porta.";
                         } else {
                             return "DESCRICAO|Nada acontece. A combinação parece estar errada.";
                         }
@@ -475,7 +475,7 @@ public class Engine {
                                 // return "NARRACAO|" + resultado.replace("\n", "\\n");
 
                                 if(jogador.isTemFoice()){
-                                    return "DESCRICAO|Você escuta um barulho na galeria.";
+                                    return "DESCRICAO|Você escuta um barulho na galeria (parece estar vindo da fazenda).";
                                 }else{
                                     return "DESCRICAO|Voce escuta um barulho na sala";
                                 }

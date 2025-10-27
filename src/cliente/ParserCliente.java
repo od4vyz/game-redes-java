@@ -358,12 +358,24 @@ public class ParserCliente {
             return "";
         }
 
+        String linhaCopia = linha;
+
         String linhaNormalizada = normalize(linha);
         String linhaSinonimo = actionsMap(linhaNormalizada);
         String linhaLimpa = removeStopWords(linhaSinonimo);
         String comando = getAction(linhaLimpa);
         if (comando.isEmpty()) {
             return "";
+        }
+
+        if(comando.equals("FALAR")){
+            // Mantém o texto original após o comando FALAR
+            String falaTexto = linhaCopia.strip().substring(comando.length()).strip();
+            if (falaTexto.isEmpty()) {
+                return comando; // sem texto para falar
+            } else {
+                return comando + "|" + falaTexto;
+            }
         }
 
         String protocol = parseProtocol(linhaLimpa, comando);

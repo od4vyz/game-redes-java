@@ -36,7 +36,7 @@ public class Moinho extends Sala {
 
         if (caldeiraoAtivo) {
             sb.append(
-                    "\nO caldeirão está fervendo intensamente - pode ser útil para derreter coisas duras mas não parece forte o suficiente para derreter metal.");
+                    "\\nO caldeirão está fervendo intensamente - pode ser útil para derreter coisas duras mas não parece forte o suficiente para derreter metal.");
         }
 
         return sb.toString();
@@ -90,7 +90,7 @@ public class Moinho extends Sala {
             return "O caldeirão não está quente o suficiente. Preciso colocar os ingredientes corretos primeiro.";
         }
 
-        return "Você jogou o pão no caldeirão, o pão começa a derreter e o líquido começa a vaporizar de forma tão rápida a ponto de o pão sumir, o líquido secar e sobrar apenas uma chave.";
+        return "Você jogou o pão no caldeirão, o pão começa a derreter e o líquido começa a vaporizar de forma tão rápida a ponto de o pão sumir, o líquido secar e sobrar apenas uma chave. Você pega ela, talvez ela abra uma porta secreta?";
     }
 
     public boolean isFoicePegue() {
