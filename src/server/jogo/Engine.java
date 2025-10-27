@@ -208,7 +208,7 @@ public class Engine {
 
                     case "IR":
                         if (parametros[0].contains("QUADRO")) {
-                            String detalhe = localAtual.getDetalhe(parametros[0]);
+                            String detalhe = localAtual.getDetalhe(parametros[0]+" "+parametros[1]);
                             if (detalhe != null) return "DESCRICAO|" + detalhe;
                             else return "ERRO|Não consigo encontrar esse quadro.";
                         }

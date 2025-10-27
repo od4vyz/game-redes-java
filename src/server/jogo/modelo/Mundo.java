@@ -44,13 +44,13 @@ public class Mundo {
                 "Você anda até o quadro 1, ele aparenta ser um Pato roxo com um longo bico e concha em sua barriga.");
         galeria.adicionarDetalhe("QUADRO 2", "É um Rinoceronte magro, verde com grandes orelhas e um chifre quadrado.");
         galeria.adicionarDetalhe("QUADRO 3",
-                "É uma girafa azul, ela aparenta ter asas enormes e uma baita barba com um formato cilíndrico.");
+                "É um peixe azul, ela aparenta ter asas enormes e uma baita barba com um formato cilíndrico.");
         galeria.adicionarDetalhe("QUADRO 4",
                 "É um avestruz laranja de chapéu e meia, seu chapéu tem formato de pirâmide.");
         galeria.adicionarDetalhe("QUADRO 5",
                 "É um dinossauro cinza e feroz aparenta ser um dinossauro comum como qualquer outro que você já tenha visto em um filme porém ele está comendo um snickers, quem desenharia isso?");
         galeria.adicionarDetalhe("QUADRO 6",
-                "Aparenta ser metade leão e metade peixe, é difícil reconhecer pois esse quadro tem uma rachadura no meio.");
+                "Aparenta ser metade leão e metade girafa, é difícil reconhecer pois esse quadro tem uma rachadura no meio.");
 
         return galeria;
     }
