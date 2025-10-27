@@ -9,7 +9,7 @@ public class Fazenda extends Sala {
             "batata", "pepino", "cenoura");
 
     public Fazenda() {
-        super("Fazenda", "Um espaço claro que revela uma fazenda.",
+        super("FAZENDA", "Um espaço claro que revela uma fazenda.",
                 "O chão inteiro está coberto por trigo, é difícil de perceber mas isso é um quarto, " +
                         "as paredes pintadas lhe dão a impressão de ser uma fazenda de verdade, é possível " +
                         "observar ventiladores escondidos nos cantos. Além disso é possível verificar algumas " +
@@ -56,7 +56,8 @@ public class Fazenda extends Sala {
     }
 
     public boolean ingredienteDisponivel(String ingrediente) {
-        return INGREDIENTES_DISPONIVEIS.contains(ingrediente.toLowerCase());
+        if(ingrediente.isEmpty()) return false;
+        else return INGREDIENTES_DISPONIVEIS.contains(ingrediente.toLowerCase());
     }
 
     public List<String> getIngredientesDisponiveis() {

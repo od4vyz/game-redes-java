@@ -57,25 +57,26 @@ public class Jogador {
     }
 
     public String InventarioString() {
-        StringBuilder sb = new StringBuilder("Inventário:\n");
-        for (Item item : inventario) {
-            sb.append("- ").append(item.getNome()).append("\n");
-        }
+        StringBuilder sb = new StringBuilder("Inventário:\\n");
 
         if (temFoice)
-            sb.append("- Foice\n");
+            sb.append("- Foice\\n");
         if (temColher)
-            sb.append("- Colher Gigante\n");
+            sb.append("- Colher Gigante\\n");
         if (temPaoMofado)
-            sb.append("- Pão Mofado\n");
+            sb.append("- Pão Mofado\\n");
         if (temChave)
-            sb.append("- Chave\n");
+            sb.append("- Chave\\n");
 
         if (!ingredientesPegos.isEmpty()) {
-            sb.append("Ingredientes coletados:\n");
+            sb.append("Ingredientes coletados:\\n");
             for (String ingrediente : ingredientesPegos) {
-                sb.append("- ").append(ingrediente).append("\n");
+                sb.append("- ").append(ingrediente).append("\\n");
             }
+        }
+
+        if(sb.length() < 15){
+            return "Seu inventário está vazio.";
         }
 
         return sb.toString();

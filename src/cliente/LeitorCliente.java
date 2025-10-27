@@ -36,7 +36,7 @@ public class LeitorCliente implements Runnable{
 
         switch (comando) {
             case "DESCRICAO":
-            case "NARRACAO":
+            case "NARRACAO":    
                 String mensagemRecebida = parametros[1];
                 mensagem = mensagemRecebida.replace("\\n", "\n"); //tratando as quebras de linha
                 break;

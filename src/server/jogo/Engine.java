@@ -7,6 +7,7 @@ import server.jogo.modelo.*;
 public class Engine {
     private Map<String, Jogador> jogadoresConectados;
     public Sala SalaJogador1;
+    public Sala proximaSala;
     public Sala SalaJogador2;
 
     private Mundo mundoLoader;
@@ -61,7 +62,7 @@ public class Engine {
         return jogadoresConectados.get(nome);
     }
 
-    public synchronized void desconectarJogador(Jogador jogador) {
+    public void desconectarJogador(Jogador jogador) {
         if (jogador != null) {
             jogadoresConectados.remove(jogador.getNome());
         }
@@ -73,7 +74,7 @@ public class Engine {
 
         switch (localAtual.getNome()) {
             /**********LOGICA DO DEPOSITO**********/
-            case "Depósito":
+            case "DEPOSITO":
                 boolean luzAcesa = (boolean) localAtual.getEstado("luzAcesa");
                 switch (comando) {
                     case "OLHAR":
@@ -124,11 +125,12 @@ public class Engine {
 
                     case "IR":
                         // SUBIR ESCADA (transição para o HALL - Capítulo 2)
-                        if (parametros[0].contains("ESCADAS")) {
+                        if (parametros[0].contains("ESCADA")) {
                             boolean portaAberta = (boolean) localAtual.getEstado("portaAberta");
-                            Sala proximaSala = localAtual.getSaida("hall");
                             if (portaAberta) {
+                                proximaSala = localAtual.getSaida("HALL");
                                 jogador.setSalaAtual(proximaSala);
+                                EstadoGlobal.getInstance().setLocalizacaoJ1(proximaSala.getNome());
                                 EstadoGlobal.getInstance().setJogador1NoHall(true);
                                 return "DESCRICAO|" + proximaSala.getDescricaoInicial();
                             } else {
@@ -163,6 +165,7 @@ public class Engine {
             /**********LOGICA DA GALERIA**********/
             case "GALERIA":
                 boolean portasAbertas = EstadoGlobal.getInstance().isPortasAbertas();
+                //System.out.println(comando);
                 switch (comando) {
                     case "OLHAR":
                         if (parametros[0].contains("AMBIENTE")) {
@@ -206,16 +209,18 @@ public class Engine {
                     case "IR":
                         if (parametros[0].contains("QUADRO")) {
                             String detalhe = localAtual.getDetalhe(parametros[0]);
-                            return (detalhe != null) ? "DESCRICAO|" + detalhe : "ERRO|Não consigo encontrar esse quadro.";
+                            if (detalhe != null) return "DESCRICAO|" + detalhe;
+                            else return "ERRO|Não consigo encontrar esse quadro.";
                         }
 
                         // ENTRAR/IR PARA A FAZENDA (Capítulo 2)
                         if (parametros[0].contains("PORTA") || parametros[0].contains("FAZENDA")) {
                             if (portasAbertas) {
-                                Sala proximSala = localAtual.getSaida("FAZENDA");
-                                jogador.setSalaAtual(proximSala);
+                                proximaSala = localAtual.getSaida("FAZENDA");
+                                jogador.setSalaAtual(proximaSala);
+                                EstadoGlobal.getInstance().setLocalizacaoJ2(proximaSala.getNome());
                                 EstadoGlobal.getInstance().setJogador2NaFazenda(true);
-                                return "DESCRICAO|" + proximSala.getDescricaoInicial();
+                                return "DESCRICAO|" + proximaSala.getDescricaoInicial();
                             } else {
                                 return "DESCRICAO|A porta ainda não está aberta.";
                             }
@@ -223,15 +228,16 @@ public class Engine {
 
                         // Ir para HALL via porta secreta
                         if (parametros[0].equals("HALL")) {
-                            if (EstadoGlobal.getInstance().isCaldeiraoAtivo()) { // Só funciona se caldeirão ativo
-                                Sala proximaSala = localAtual.getSaida("HALL");
+                            if (EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
+                                proximaSala = localAtual.getSaida("HALL");
                                 jogador.setSalaAtual(proximaSala);
+                                EstadoGlobal.getInstance().setLocalizacaoJ2(proximaSala.getNome());
                                 return "DESCRICAO|" + proximaSala.getDescricaoInicial();
                             } else {
-                                return "ERRO|Não há passagem disponível para o HALL.";
+                                return "DESCRICAO| Não há passagem disponível para o HALL.";
                             }
                         }
-                        break;
+                       break;
                 
                     default:
                         break;
@@ -267,7 +273,7 @@ public class Engine {
                             }
 
                             // Primeira tentativa - porta errada
-                            return "NARRACAO|Vocês tentaram usar a CHAVE na porta porém ela não encaixa, é estranho pois parece ser exatamente para essa porta, só então você percebe ter colocado na porta errada, eram duas portas, na segunda ela encaixa perfeitamente.\\n\\nFINAL DO JOGO!\\n\\nCom a porta aberta você descobre que estava nO TITANIC NA EAC........";
+                            return "NARRACAO|Vocês tentar usar a CHAVE na porta porém ela não encaixa, é estranho pois parece ser exatamente para essa porta, só então você percebe ter colocado na porta errada, eram duas portas, na segunda ela encaixa perfeitamente.\\n\\nFINAL DO JOGO!\\n\\nCom a porta aberta você descobre que estava nO TITANIC NA EAC........";
                         }
                         break;
 
@@ -277,7 +283,7 @@ public class Engine {
                         }
 
                         if (parametros[0].contains("COZINHA")) { //
-                            Sala proximaSala = localAtual.getSaida("cozinha");
+                            proximaSala = localAtual.getSaida("COZINHA");
                                 jogador.setSalaAtual(proximaSala);
                                 EstadoGlobal.getInstance().setLocalizacaoJ1(proximaSala.getNome()); 
                                 return "DESCRICAO|" + proximaSala.getDescricaoInicial(); //
@@ -285,7 +291,7 @@ public class Engine {
 
                          if (parametros[0].equals("GALERIA")) {
                              if (EstadoGlobal.getInstance().isCaldeiraoAtivo()) { // Só funciona se caldeirão ativo
-                            Sala proximaSala = localAtual.getSaida("GALERIA");
+                            proximaSala = localAtual.getSaida("GALERIA");
                             jogador.setSalaAtual(proximaSala);
                             return "DESCRICAO|" + proximaSala.getDescricaoInicial();
                             } else {
@@ -303,7 +309,7 @@ public class Engine {
                 break;
 
             /**********LOGICA DA COZINHA**********/
-                case "Cozinha":
+                case "COZINHA":
                     switch (comando) {
                     case "OLHAR": 
                         if (parametros[0].equals("AMBIENTE")) {
@@ -331,7 +337,7 @@ public class Engine {
                     case "IR":                    
 
                         if (parametros[0].equals("HALL")) {
-                            Sala proximaSala = localAtual.getSaida("HALL");
+                            proximaSala = localAtual.getSaida("HALL");
                             jogador.setSalaAtual(proximaSala);
                             return "DESCRICAO|" + proximaSala.getDescricaoInicial();
                         }
@@ -366,10 +372,7 @@ public class Engine {
                                 return "ERRO|Você não tem uma foice. Vá ao moinho para pegar uma.";
                             }
 
-                            String ingrediente = parametros[0];
-                            if (FAZENDA.ingredienteDisponivel(ingrediente)) {
-                                 return "DESCRICAO|" + FAZENDA.observarIngrediente(ingrediente);
-                            }
+                            String ingrediente = parametros[1];
 
                             if (!FAZENDA.ingredienteDisponivel(ingrediente)) {
                                 return "ERRO|Não há " + ingrediente + " aqui. Ingredientes disponíveis: " +
@@ -382,14 +385,14 @@ public class Engine {
 
                     case "IR":
                              if (parametros[0].contains("GALERIA")) {
-                                Sala proximaSala = localAtual.getSaida("GALERIA");
+                                proximaSala = localAtual.getSaida("GALERIA");
                                 jogador.setSalaAtual(proximaSala);
                                 EstadoGlobal.getInstance().setLocalizacaoJ2(proximaSala.getNome());
                                 return "DESCRICAO|" + proximaSala.getDescricaoInicial();
                             }
 
                             if (parametros[0].contains("MOINHO")) { 
-                                Sala proximaSala = localAtual.getSaida("moinho");
+                                proximaSala = localAtual.getSaida("MOINHO");
                                 jogador.setSalaAtual(proximaSala);
                                 return "DESCRICAO|" + proximaSala.getDescricaoInicial(); 
                             }
@@ -402,7 +405,7 @@ public class Engine {
                 break;
                 
             /**********LOGICA DO MOINHO**********/
-            case "Moinho":
+            case "MOINHO":
                  if (localAtual instanceof Moinho) {
                 Moinho moinho = (Moinho) localAtual;
 
@@ -434,6 +437,25 @@ public class Engine {
                         break;
 
                     case "USAR":
+                        // Jogar pão no caldeirão
+                        if (parametros[0].contains("PAO") && parametros[1].contains("CALDEIRAO")) {
+
+                            if (!jogador.isTemPaoMofado()) {
+                                return "ERRO|Você não tem pão mofado.";
+                            }
+
+                            String resultado = moinho.jogarPaoNoCaldeirao();
+
+                            if (resultado.contains("chave")) {
+                                if(!jogador.isTemChave()){
+                                    jogador.receberChave();
+                                    EstadoGlobal.getInstance().setChaveObtida(true);
+                                }
+                                return "NARRACAO|" + resultado.replace("\\n", "\\n");
+                            }
+                            return "DESCRICAO|Você já pegou a CHAVE.";
+                        }
+
                         // Colocar ingrediente no caldeirão
                         if (parametros[1].contains("CALDEIRAO")) {
 
@@ -444,40 +466,25 @@ public class Engine {
                                 return "ERRO|Você não tem " + ingrediente + ". Ingredientes que você tem: " + String.join(", ", jogador.getIngredientesPegos());
                             }
 
-                            String resultado = moinho.adicionarIngrediente(ingrediente);
+                            String resultado = moinho.adicionarIngrediente(ingrediente, mundoLoader);
 
                             // Verificar se o caldeirão ficou ativo e enviar evento
                             if (moinho.isCaldeiraoAtivo() && !EstadoGlobal.getInstance().isCaldeiraoAtivo()) {
                                 EstadoGlobal.getInstance().setCaldeiraoAtivo(true);
                                 EstadoGlobal.getInstance().setMolduraAberta(true);
+                                // return "NARRACAO|" + resultado.replace("\n", "\\n");
 
-                                // Enviar evento para ambos os jogadores sobre barulho
-                                SistemaNotificacao.getInstance().enviarEvento("CALDEIRAO_ATIVO", "Sistema");
-
-                                return "NARRACAO|" + resultado.replace("\n", "\\n");
+                                if(jogador.isTemFoice()){
+                                    return "DESCRICAO|Você escuta um barulho na galeria.";
+                                }else{
+                                    return "DESCRICAO|Voce escuta um barulho na sala";
+                                }
                             }
 
                             return "DESCRICAO|" + resultado.replace("\n", "\\n");
                         }
 
-                        // Jogar pão no caldeirão
-                        if (parametros[0].contains("PAO") && parametros[1].contains("CALDEIRAO")) {
-
-                            if (!jogador.isTemPaoMofado()) {
-                                return "ERRO|Você não tem pão mofado.";
-                            }
-
-                            String resultado = moinho.jogarPaoNoCaldeirao();
-
-                            if (resultado.contains("CHAVE")) {
-                                if(!jogador.isTemChave()){
-                                    jogador.receberChave();
-                                    EstadoGlobal.getInstance().setChaveObtida(true);
-                                }
-                                return "NARRACAO|" + resultado.replace("\n", "\\n");
-                            }
-                            return "DESCRICAO|Você já pegou a CHAVE.";
-                        }
+                        
                         break;
                     
                     case "IR":
@@ -499,7 +506,8 @@ public class Engine {
         //--------------COMANDOS BASICOS---------
         switch (comando) {
             case "INVENTARIO":
-                return "DESCRICAO|" + jogador.InventarioString().replace("\\n", "\n");
+                System.out.println(jogador.InventarioString());
+                return "DESCRICAO|" + jogador.InventarioString();
             
             case "OLHAR":
                 if (parametros[0].contains("AMBIENTE")) {
@@ -528,6 +536,6 @@ public class Engine {
 
             default:
                 return "ERRO|Não entendi o que você quis dizer.";
-        }                
+        }            
     }
 }

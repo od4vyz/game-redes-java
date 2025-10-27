@@ -11,7 +11,7 @@ public class Mundo {
 
     public Sala criarDeposito() {
         // Depósito
-        deposito = new Sala("Depósito", "Você está em um lugar escuro.", // Descrição Curta (inicial)
+        deposito = new Sala("DEPOSITO", "Você está em um lugar escuro.", // Descrição Curta (inicial)
                 "A sala está escura, você não consegue enxergar nada a não ser um pequeno interruptor a sua frente.");
         deposito.adicionarEstado("luzAcesa", false);
         deposito.adicionarEstado("portaAberta", false);
@@ -29,7 +29,7 @@ public class Mundo {
 
         // --- GALERIA ---
         galeria = new Sala(
-                "Galeria",
+                "GALERIA",
                 "Você está em uma sala grande que parece ser uma galeria, bem iluminada com diversos quadros estranhos.", // Descrição
                                                                                                                           // Curta
                 "Olhando em volta você percebe que tem uma porta atrás de você, além dos quadros terem animais caricatos com formas estranhas. SYSTEM TIP: Andar para o quadro 1, Andar para o quadro 2... Andar para o quadro 6" // Descrição
@@ -58,7 +58,7 @@ public class Mundo {
     public Sala criarHall() {
         // --- HALL---
         hall = new Sala(
-                "Hall",
+                "HALL",
                 "Ao subir você percebe que estava em um porão, que dá em uma grande sala, parece um hall enorme.",
                 "A sala é bem espaçosa e iluminada, à sua direita você consegue ver a borda de um balcão, uma possível cozinha, atrás duas portas que aparentam ser a saída.");
 
@@ -68,18 +68,12 @@ public class Mundo {
     public Sala criarCozinha() {
         // --- COZINHA ---
         cozinha = new Sala(
-                "Cozinha",
+                "COZINHA",
                 "Uma cozinha americana simples, um balcão com vários utensílios de cozinha como facas alguns pratos na louça e uma geladeira.",
                 "Em uma das paredes tem uma lista de compras, uma janela com grades de aço é vista em cima da pia.");
 
         cozinha.adicionarDetalhe("lista de compras",
-                "Uma lista de compras, escrita uma rotina:\n" +
-                        "\"Todo dia às 9h eu tomo meu café,\n" +
-                        "11h eu preparo meu arroz\n" +
-                        "Enquanto preparo, preciso sempre ter minhas batatas e cenouras em mão\n" +
-                        "Meio dia eu já comi as cenouras e batata nessa ordem\n" +
-                        "Só então meu arroz está pronto\n\n" +
-                        "Lembre-se de sempre tomar seu chá de hortelã antes de comer o arroz\"");
+                "Uma lista de compras, escrita como uma rotina: Todo dia às 9h eu tomo meu café 11h eu preparo meu arroz Enquanto preparo, preciso sempre ter minhas batatas e cenouras em mão Meio dia eu já comi as cenouras e batata nessa ordem Só então meu arroz está pronto Lembre-se de sempre tomar seu chá de hortelã antes de comer o arroz");
 
         cozinha.adicionarDetalhe("geladeira",
                 "A geladeira está uma bagunça mas tudo parece estar bem conservado e parece ser bem recente. Algo te chama atenção, um pão mofado está no meio das comidas, ele aparenta estar há muito tempo por aqui onde ele está é possível ver um leve decaimento aparenta ser pesado eu deveria pegar isso?");
@@ -112,26 +106,23 @@ public class Mundo {
         // Aqui mostra as configurações e mudanças que as salas recebem após alguns
         // eventos do jogo
         // tambem refere as sala vizinhas
-        deposito.adicionarSaida("hall", hall);
-        hall.adicionarSaida("deposito", deposito);
+        deposito.adicionarSaida("HALL", hall);
+        hall.adicionarSaida("DEPOSITO", deposito);
 
-        hall.adicionarSaida("cozinha", cozinha);
-        cozinha.adicionarSaida("hall", hall);
-        cozinha.adicionarSaida("sala", hall);
+        hall.adicionarSaida("COZINHA", cozinha);
+        cozinha.adicionarSaida("HALL", hall);
 
-        galeria.adicionarSaida("fazenda", fazenda);
-        fazenda.adicionarSaida("galeria", galeria);
+        galeria.adicionarSaida("FAZENDA", fazenda);
+        fazenda.adicionarSaida("GALERIA", galeria);
 
-        fazenda.adicionarSaida("moinho", moinho);
-        moinho.adicionarSaida("fazenda", fazenda);
+        fazenda.adicionarSaida("MOINHO", moinho);
+        moinho.adicionarSaida("FAZENDA", fazenda);
 
-        galeria.adicionarSaida("hall", hall);
-        galeria.adicionarSaida("casa principal", hall);
-        hall.adicionarSaida("galeria", galeria);
+    }
 
-        hall.adicionarSaida("fazenda", fazenda);
-        fazenda.adicionarSaida("hall", hall);
-
+    public void HALLGALERIA() {
+        hall.adicionarSaida("GALERIA", galeria);
+        galeria.adicionarSaida("HALL", hall);
     }
 
     public Sala criarsala() {

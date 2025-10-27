@@ -10,7 +10,7 @@ public class Moinho extends Sala {
     private boolean caldeiraoAtivo;
 
     public Moinho() {
-        super("Moinho", "O moinho é espaçoso, um caldeirão fervente está no meio dele.",
+        super("MOINHO", "O moinho é espaçoso, um caldeirão fervente está no meio dele.",
                 "Ao lado do caldeirão é visto uma colher gigante, usada provavelmente para mexer esse caldeirão, " +
                         "e uma foice está em um suporte na parede, uma placa ao lado do caldeirão diz 'comer'.");
         this.colherPegue = false;
@@ -58,7 +58,7 @@ public class Moinho extends Sala {
         return "Você pegou a foice. Agora você pode coletar ingredientes na fazenda usando 'usar foice [ingrediente]'.";
     }
 
-    public String adicionarIngrediente(String ingrediente) {
+    public String adicionarIngrediente(String ingrediente, Mundo mundo) {
         // Sequência correta: café, cenoura, batata, hortelã, arroz
         String[] sequenciaCorreta = { "cafe", "cenoura", "batata", "hortela", "arroz" };
 
@@ -69,6 +69,7 @@ public class Moinho extends Sala {
 
             if (ingredientesNoCaldeirao.size() == sequenciaCorreta.length) {
                 caldeiraoAtivo = true; // esse evento o servidor precisa enviar para os dois jogadores
+                mundo.HALLGALERIA(); // Abre a passagem para a galeria
                 return "Você colocou " + ingrediente
                         + " no caldeirão. O caldeirão ficou mais intenso - pode ser útil para derreter coisas duras mas não parece forte o suficiente para derreter metal seria mais seguro JOGAR algo nele.";
             } else {

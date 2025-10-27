@@ -190,6 +190,7 @@ public class ParserCliente {
 
         m.put("ESCADA", "ESCADA");
         m.put("ESCADARIA", "ESCADA");
+        m.put("ESCADAS", "ESCADA");
 
         SYNONYMS = Collections.unmodifiableMap(m);
     }
@@ -264,14 +265,13 @@ public class ParserCliente {
             case "OLHAR":
                 if (tokens.length < 2) {
                     return comando; // sem alvo
-                } 
-                else {
+                } else {
                     String[] parts = linha.split("\\s+");
                     StringBuilder protocol = new StringBuilder(comando);
-                        if(parts[0].equalsIgnoreCase(comando))
-                            protocol.append('|').append(parts[1]);
-                        else
-                            protocol.append('|').append(parts[0]);
+                    for (int i = 0; i < parts.length; i++) {
+                        if(!parts[i].equalsIgnoreCase(comando))
+                            protocol.append('|').append(parts[i]);
+                    }
                     return protocol.toString();
                 }
 
@@ -284,55 +284,51 @@ public class ParserCliente {
             case "IR":
                 if (tokens.length < 2) {
                     return comando; // sem alvo
-                } 
-                else {
+                } else {
                     String[] parts = linha.split("\\s+");
                     StringBuilder protocol = new StringBuilder(comando);
-                        if(parts[0].equalsIgnoreCase(comando))
-                            protocol.append('|').append(parts[1]);
-                        else
-                            protocol.append('|').append(parts[0]);
+                    for (int i = 0; i < parts.length; i++) {
+                        if(!parts[i].equalsIgnoreCase(comando))
+                            protocol.append('|').append(parts[i]);
+                    }
                     return protocol.toString();
                 }
             case "PEGAR":
                 if (tokens.length < 2) {
                     return comando; // sem alvo
-                } 
-                else {
+                } else {
                     String[] parts = linha.split("\\s+");
                     StringBuilder protocol = new StringBuilder(comando);
-                        if(parts[0].equalsIgnoreCase(comando))
-                            protocol.append('|').append(parts[1]);
-                        else
-                            protocol.append('|').append(parts[0]);
+                    for (int i = 0; i < parts.length; i++) {
+                        if(!parts[i].equalsIgnoreCase(comando))
+                            protocol.append('|').append(parts[i]);
+                    }
                     return protocol.toString();
                 }
 
             case "USAR":
                 if (tokens.length < 2) {
                     return comando; // sem alvo
-                } 
-                else {
+                } else {
                     String[] parts = linha.split("\\s+");
                     StringBuilder protocol = new StringBuilder(comando);
-                        if(parts[0].equalsIgnoreCase(comando))
-                            protocol.append('|').append(parts[1]);
-                        else
-                            protocol.append('|').append(parts[0]);
+                    for (int i = 0; i < parts.length; i++) {
+                        if(!parts[i].equalsIgnoreCase(comando))
+                            protocol.append('|').append(parts[i]);
+                    }
                     return protocol.toString();
                 }
 
             case "FALAR":
                 if (tokens.length < 2) {
                     return comando; // sem alvo
-                } 
-                else {
+                } else {
                     String[] parts = linha.split("\\s+");
                     StringBuilder protocol = new StringBuilder(comando);
-                        if(parts[0].equalsIgnoreCase(comando))
-                            protocol.append('|').append(parts[1]);
-                        else
-                            protocol.append('|').append(parts[0]);
+                    for (int i = 0; i < parts.length; i++) {
+                        if(!parts[i].equalsIgnoreCase(comando))
+                            protocol.append('|').append(parts[i]);
+                    }
                     return protocol.toString();
                 }
 
@@ -366,6 +362,9 @@ public class ParserCliente {
         String linhaSinonimo = actionsMap(linhaNormalizada);
         String linhaLimpa = removeStopWords(linhaSinonimo);
         String comando = getAction(linhaLimpa);
+        if (comando.isEmpty()) {
+            return "";
+        }
 
         String protocol = parseProtocol(linhaLimpa, comando);
         

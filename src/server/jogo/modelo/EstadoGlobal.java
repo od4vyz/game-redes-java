@@ -13,8 +13,8 @@ public class EstadoGlobal {
     private boolean chaveObtida = false;
 
     // Localização atual dos jogadores
-    private String localizacaoJ1 = "Depósito";
-    private String localizacaoJ2 = "Fazenda";
+    private String localizacaoJ1 = "DEPOSITO";
+    private String localizacaoJ2 = "FAZENDA";
     private boolean encontroJaNotificado = false;
 
     private EstadoGlobal() {
